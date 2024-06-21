@@ -1,0 +1,16 @@
+services:
+  
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+
+  blog.servicetests:
+    build: ./backend/src/Blog.ServiceTests
