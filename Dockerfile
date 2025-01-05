@@ -1,19 +1,20 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
-WORKDIR /src
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS base
+WORKDIR /app
 
-COPY Blog.sln /src
+COPY *.sln .
+COPY ./src ./src
 
-WORKDIR /src
+RUN dotnet restore Blog.sln
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
+RUN dotnet publish ./src/Blog.Api/Blog.Api.csproj -c Release -o /app
+FROM base AS api
 WORKDIR /app
 
 # Copy everything needed to run the app from the "build" stage.
-# COPY --from=build /app .
-
+COPY --from=base /app .
 # Switch to a non-privileged user (defined in the base image) that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
 # and https://github.com/dotnet/dotnet-docker/discussions/4764
 USER $APP_UID
 
-ENTRYPOINT ["dotnet", "Blog.dll"]
+ENTRYPOINT ["dotnet", "Blog.Api.dll"]

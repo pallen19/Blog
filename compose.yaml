@@ -1,16 +1,27 @@
 services:
   
+  traefik:
+    image: traefik:latest 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "8080:80"
-
   db:
     image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
 
-  blog.servicetests:
-    build: ./backend/src/Blog.ServiceTests
+  servicetests:
+    build: ./src/Blog.ServiceTests
+
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8180:9090"
